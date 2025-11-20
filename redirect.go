@@ -1,4 +1,4 @@
-package plugin
+package traefik_plugin_language_redirect
 
 import (
 	"fmt"

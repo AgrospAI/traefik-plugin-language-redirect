@@ -1,4 +1,4 @@
-package plugin
+package traefik_plugin_language_redirect
 
 import (
 	"context"
@@ -21,10 +21,10 @@ var langRedirectTests = []struct {
 		cookieLanguage:       "fr",
 		headerAcceptLanguage: "",
 		config: &Config{
-			cookieName:         "lang",
-			defaultLanguage:    "en",
-			rootLanguage:       "en",
-			supportedLanguages: []string{"en", "fr", "de"},
+			CookieName:         "lang",
+			DefaultLanguage:    "en",
+			RootLanguage:       "en",
+			SupportedLanguages: []string{"en", "fr", "de"},
 		},
 		expectedLocation: "http://example.com/fr/page",
 	},
@@ -34,10 +34,10 @@ var langRedirectTests = []struct {
 		cookieLanguage:       "",
 		headerAcceptLanguage: "de",
 		config: &Config{
-			cookieName:         "lang",
-			defaultLanguage:    "en",
-			rootLanguage:       "en",
-			supportedLanguages: []string{"en", "fr", "de"},
+			CookieName:         "lang",
+			DefaultLanguage:    "en",
+			RootLanguage:       "en",
+			SupportedLanguages: []string{"en", "fr", "de"},
 		},
 		expectedLocation: "http://example.com/de/page",
 	},
@@ -47,10 +47,10 @@ var langRedirectTests = []struct {
 		cookieLanguage:       "",
 		headerAcceptLanguage: "",
 		config: &Config{
-			cookieName:         "lang",
-			defaultLanguage:    "en",
-			rootLanguage:       "",
-			supportedLanguages: []string{"en", "fr", "de"},
+			CookieName:         "lang",
+			DefaultLanguage:    "en",
+			RootLanguage:       "",
+			SupportedLanguages: []string{"en", "fr", "de"},
 		},
 		expectedLocation: "http://example.com/en/page",
 	},
@@ -60,10 +60,10 @@ var langRedirectTests = []struct {
 		cookieLanguage:       "fr",
 		headerAcceptLanguage: "",
 		config: &Config{
-			cookieName:         "lang",
-			defaultLanguage:    "en",
-			rootLanguage:       "en",
-			supportedLanguages: []string{"en", "fr", "de"},
+			CookieName:         "lang",
+			DefaultLanguage:    "en",
+			RootLanguage:       "en",
+			SupportedLanguages: []string{"en", "fr", "de"},
 		},
 		expectedLocation: "http://example.com/fr/page",
 	},
@@ -73,10 +73,10 @@ var langRedirectTests = []struct {
 		cookieLanguage:       "",
 		headerAcceptLanguage: "de",
 		config: &Config{
-			cookieName:         "lang",
-			defaultLanguage:    "en",
-			rootLanguage:       "en",
-			supportedLanguages: []string{"en", "fr", "de"},
+			CookieName:         "lang",
+			DefaultLanguage:    "en",
+			RootLanguage:       "en",
+			SupportedLanguages: []string{"en", "fr", "de"},
 		},
 		expectedLocation: "http://example.com/de/page",
 	},
@@ -86,10 +86,10 @@ var langRedirectTests = []struct {
 		cookieLanguage:       "",
 		headerAcceptLanguage: "",
 		config: &Config{
-			cookieName:         "lang",
-			defaultLanguage:    "en",
-			rootLanguage:       "",
-			supportedLanguages: []string{"en", "fr", "de"},
+			CookieName:         "lang",
+			DefaultLanguage:    "en",
+			RootLanguage:       "",
+			SupportedLanguages: []string{"en", "fr", "de"},
 		},
 		expectedLocation: "http://example.com/en/page",
 	},
@@ -117,7 +117,7 @@ func TestLangRedirect(t *testing.T) {
 			// Set cookie if specified
 			if tt.cookieLanguage != "" {
 				req.AddCookie(&http.Cookie{
-					Name:  tt.config.cookieName,
+					Name:  tt.config.CookieName,
 					Value: tt.cookieLanguage,
 				})
 			}

@@ -1,0 +1,17 @@
+api:
+  insecure: true
+
+entryPoints:
+  web:
+    address: ":80"
+  traefik:
+    address: ":8080"
+
+providers:
+  docker:
+    exposedByDefault: false
+
+experimental:
+  localPlugins:
+    language-redirect:
+      moduleName: github.com/AgrospAI/traefik-plugin-language-redirect

@@ -1,0 +1,30 @@
+services:
+  whoami:
+    image: traefik/whoami
+    labels:
+      - "traefik.enable=true"
+
+      # Router
+      - "traefik.http.routers.whoami.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.whoami.entrypoints=web"
+      - "traefik.http.routers.whoami.middlewares=language-redirect@docker"
+
+      # Service
+      - "traefik.http.services.whoami.loadbalancer.server.port=80"
+
+      # Plugin configuration (middleware definition)
+      - "traefik.http.middlewares.language-redirect.plugin.language-redirect.cookieName=lang"
+      - "traefik.http.middlewares.language-redirect.plugin.language-redirect.defaultLanguage=en"
+      - "traefik.http.middlewares.language-redirect.plugin.language-redirect.supportedLanguages[0]=en"
+      - "traefik.http.middlewares.language-redirect.plugin.language-redirect.supportedLanguages[1]=es"
+      - "traefik.http.middlewares.language-redirect.plugin.language-redirect.supportedLanguages[2]=de"
+  traefik:
+    image: traefik:v3
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.yml:/etc/traefik/traefik.yml
+      # Mount local plugin directory
+      - ../:/plugins-local/src/github.com/AgrospAI/traefik-plugin-language-redirect
+    ports:
+      - "80:80"
+      - "8080:8080" # Traefik dashboard

@@ -1,4 +1,4 @@
-package plugin
+package traefik_plugin_language_redirect
 
 import (
 	"context"
@@ -8,10 +8,10 @@ import (
 )
 
 type Config struct {
-	cookieName         string
-	defaultLanguage    string
-	rootLanguage       string
-	supportedLanguages []string
+	CookieName         string
+	DefaultLanguage    string
+	RootLanguage       string
+	SupportedLanguages []string
 }
 
 type LanguageRedirect struct {
@@ -21,32 +21,35 @@ type LanguageRedirect struct {
 
 func CreateConfig() *Config {
 	return &Config{
-		cookieName:         "",
-		defaultLanguage:    "",
-		rootLanguage:       "",
-		supportedLanguages: []string{},
+		CookieName:         "",
+		DefaultLanguage:    "",
+		RootLanguage:       "",
+		SupportedLanguages: []string{},
 	}
 }
 
 func New(ctx context.Context, next http.Handler, config *Config, name string) (http.Handler, error) {
-	if len(config.supportedLanguages) == 0 {
+	// Print configuration for debugging
+	// fmt.Fprintf(os.Stdout, "Configuration: %+v\n", config)
+
+	if len(config.SupportedLanguages) == 0 {
 		return nil, fmt.Errorf("supportedLanguages cannot be empty")
 	}
 
-	if config.defaultLanguage == "" {
+	if config.DefaultLanguage == "" {
 		return nil, fmt.Errorf("defaultLanguage cannot be empty")
 	}
 
-	if config.cookieName == "" {
+	if config.CookieName == "" {
 		return nil, fmt.Errorf("cookieName cannot be empty")
 	}
 
-	if config.rootLanguage != "" && !slices.Contains(config.supportedLanguages, config.rootLanguage) {
-		return nil, fmt.Errorf("rootLanguage %s is not in supportedLanguages", config.rootLanguage)
+	if config.RootLanguage != "" && !slices.Contains(config.SupportedLanguages, config.RootLanguage) {
+		return nil, fmt.Errorf("rootLanguage %s is not in supportedLanguages", config.RootLanguage)
 	}
 
-	if !slices.Contains(config.supportedLanguages, config.defaultLanguage) {
-		return nil, fmt.Errorf("defaultLanguage %s is not in supportedLanguages", config.defaultLanguage)
+	if !slices.Contains(config.SupportedLanguages, config.DefaultLanguage) {
+		return nil, fmt.Errorf("defaultLanguage %s is not in supportedLanguages", config.DefaultLanguage)
 	}
 
 	return &LanguageRedirect{
@@ -56,8 +59,12 @@ func New(ctx context.Context, next http.Handler, config *Config, name string) (h
 }
 
 func (a *LanguageRedirect) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	url := req.URL.String()
-	cookie, err := req.Cookie(a.config.cookieName)
+	scheme := "http"
+	if req.TLS != nil {
+		scheme = "https"
+	}
+	url := fmt.Sprintf("%s://%s%s", scheme, req.Host, req.URL.String())
+	cookie, err := req.Cookie(a.config.CookieName)
 	preferredLang := req.Header.Get("Accept-Language")
 
 	redirectUrl, err := RedirectURL(RedirectOptions{
@@ -70,9 +77,9 @@ func (a *LanguageRedirect) ServeHTTP(rw http.ResponseWriter, req *http.Request) 
 			}
 		}(),
 		AcceptLang:     preferredLang,
-		DefaultLang:    a.config.defaultLanguage,
-		RootLang:       a.config.rootLanguage,
-		SupportedLangs: a.config.supportedLanguages,
+		DefaultLang:    a.config.DefaultLanguage,
+		RootLang:       a.config.RootLanguage,
+		SupportedLangs: a.config.SupportedLanguages,
 	})
 	if err == nil && redirectUrl != url {
 		http.Redirect(rw, req, redirectUrl, http.StatusFound)

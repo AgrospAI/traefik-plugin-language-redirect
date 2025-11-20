@@ -63,6 +63,16 @@ You can use Visual Studio Code Dev Containers for a consistent development envir
 
 > Check the [Makefile](./Makefile) for useful commands to lint, test, and format the code.
 
+### End to End Testing with Docker Compose
+
+```bash
+docker compose -f ./test/docker-compose.yaml up
+```
+
+```bash
+make e2e
+```
+
 ## References
 
 - <https://plugins.traefik.io/create>

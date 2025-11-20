@@ -21,3 +21,6 @@ vendor:
 
 clean:
 	rm -rf ./vendor
+
+e2e:
+	./test/e2e.sh
