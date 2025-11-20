@@ -1,0 +1,15 @@
+displayName: Language Redirect
+type: middleware
+iconPath: .assets/icon.png
+
+import: github.com/AgrospAI/traefik-plugin-language-redirect
+summary: 'Redirect users based on their language preferences stored in cookies.'
+
+testData:
+  cookieName: preferred_lang
+  defaultLanguage: en
+  rootLanguage: es
+  supportedLanguages:
+  - en
+  - es
+  - de
