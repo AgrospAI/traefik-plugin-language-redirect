@@ -63,7 +63,8 @@ func (a *LanguageRedirect) ServeHTTP(rw http.ResponseWriter, req *http.Request) 
 	if req.TLS != nil {
 		scheme = "https"
 	}
-	url := fmt.Sprintf("%s://%s%s", scheme, req.Host, req.URL.String())
+
+	url := fmt.Sprintf("%s://%s%s", scheme, req.Host, req.URL.RequestURI())
 	cookie, err := req.Cookie(a.config.CookieName)
 	preferredLang := req.Header.Get("Accept-Language")
 
