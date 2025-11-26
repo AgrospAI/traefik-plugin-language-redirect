@@ -37,6 +37,6 @@ test_request() {
 
 # Tests
 test_request "http://localhost/en" "200" ""
-test_request "http://localhost/" "302" "http://localhost/en"
-test_request "http://localhost/" "302" "http://localhost/es" "Accept-Language: es"
-test_request "http://localhost/" "302" "http://localhost/de" "Cookie: lang=de"
+test_request "http://localhost/" "302" "/en"
+test_request "http://localhost/" "302" "/es" "Accept-Language: es"
+test_request "http://localhost/" "302" "/de" "Cookie: lang=de"
