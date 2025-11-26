@@ -58,34 +58,28 @@ func New(ctx context.Context, next http.Handler, config *Config, name string) (h
 	}, nil
 }
 
-func (a *LanguageRedirect) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	scheme := "http"
-	if req.TLS != nil {
-		scheme = "https"
-	}
-
-	url := fmt.Sprintf("%s://%s%s", scheme, req.Host, req.URL.RequestURI())
-	cookie, err := req.Cookie(a.config.CookieName)
-	preferredLang := req.Header.Get("Accept-Language")
-
-	redirectUrl, err := RedirectURL(RedirectOptions{
-		URL: url,
-		CookieLang: func() string {
-			if err == nil {
-				return cookie.Value
-			} else {
-				return ""
-			}
-		}(),
-		AcceptLang:     preferredLang,
-		DefaultLang:    a.config.DefaultLanguage,
-		RootLang:       a.config.RootLanguage,
-		SupportedLangs: a.config.SupportedLanguages,
+func (lr *LanguageRedirect) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+	result, err := RedirectURL(RedirectOptions{
+		URL:            *req.URL,
+		CookieLang:     getCookieValue(req, lr.config.CookieName),
+		AcceptLang:     req.Header.Get("Accept-Language"),
+		DefaultLang:    lr.config.DefaultLanguage,
+		RootLang:       lr.config.RootLanguage,
+		SupportedLangs: lr.config.SupportedLanguages,
 	})
-	if err == nil && redirectUrl != url {
-		http.Redirect(rw, req, redirectUrl, http.StatusFound)
+
+	if err == nil && result.ShouldRedirect {
+		http.Redirect(rw, req, result.Target.String(), http.StatusFound)
 		return
 	}
 
-	a.next.ServeHTTP(rw, req)
+	lr.next.ServeHTTP(rw, req)
+}
+
+func getCookieValue(req *http.Request, name string) string {
+	c, _ := req.Cookie(name)
+	if c != nil {
+		return c.Value
+	}
+	return ""
 }
