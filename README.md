@@ -9,7 +9,7 @@ experimental:
   plugins:
     language-redirect:
       moduleName: github.com/AgrospAI/traefik-plugin-language-redirect
-      version: v0.0.1
+      version: v0.0.2
 ```
 
 ## Usage
