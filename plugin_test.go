@@ -184,6 +184,19 @@ var langRedirectTests = []struct {
 		},
 		expectedLocation: "http://example.com/fr/",
 	},
+	{
+		name:                 "Redirect keeps trailing slash",
+		url:                  "http://example.com/docs/page/",
+		cookieLanguage:       "de",
+		headerAcceptLanguage: "",
+		config: &Config{
+			CookieName:         "lang",
+			DefaultLanguage:    "en",
+			RootLanguage:       "en",
+			SupportedLanguages: []string{"en", "fr", "de"},
+		},
+		expectedLocation: "http://example.com/de/docs/page/",
+	},
 }
 
 func TestLangRedirect(t *testing.T) {

@@ -66,24 +66,26 @@ func RedirectURL(opts RedirectOptions) (RedirectResult, error) {
 	return RedirectResult{false, opts.URL}, nil
 }
 
-func prependLangToPath(lang string, url url.URL) url.URL {
-	path := url.Path
-	segments := strings.Split(strings.Trim(path, "/"), "/")
-	segments = append([]string{lang}, segments...)
-	url.Path = "/" + strings.Join(segments, "/")
-	return url
+func prependLangToPath(lang string, u url.URL) url.URL {
+	u.Path = "/" + lang + u.Path
+	return u
 }
 
-func getLangFromPath(url url.URL, supportedLangs []string) (string, url.URL) {
-	path := url.Path
-	segments := strings.Split(strings.Trim(path, "/"), "/")
-	if len(segments) > 0 {
-		firstSegment := segments[0]
-		if slices.Contains(supportedLangs, firstSegment) {
-			restOfPath := "/" + strings.Join(segments[1:], "/")
-			url.Path = restOfPath
-			return firstSegment, url
-		}
+func getLangFromPath(u url.URL, supportedLangs []string) (string, url.URL) {
+	segments := strings.Split(strings.TrimPrefix(u.Path, "/"), "/")
+
+	if len(segments) == 0 || !slices.Contains(supportedLangs, segments[0]) {
+		return "", u
 	}
-	return "", url
+
+	lang := segments[0]
+	rest := segments[1:]
+
+	if len(rest) == 0 {
+		u.Path = ""
+	} else {
+		u.Path = "/" + strings.Join(rest, "/")
+	}
+
+	return lang, u
 }
