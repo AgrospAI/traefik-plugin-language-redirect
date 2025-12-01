@@ -24,14 +24,14 @@ jobs:
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
-        git tag -a "v${{ steps.version.outputs.version }}" -m "Release v${{ steps.version.outputs.version }}"
+        git tag -a "v${{ steps.version.outputs.version }}" -m "v${{ steps.version.outputs.version }}"
         git push origin "v${{ steps.version.outputs.version }}"
 
     - name: Create GitHub Release
       uses: actions/create-release@v1
       with:
         tag_name: "v${{ steps.version.outputs.version }}"
-        release_name: "Release v${{ steps.version.outputs.version }}"
+        release_name: "v${{ steps.version.outputs.version }}"
         draft: false
         prerelease: false
       env:
