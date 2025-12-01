@@ -24,3 +24,9 @@ clean:
 
 e2e:
 	./test/e2e.sh
+
+version:
+	@cat $(VERSION_FILE)
+
+bump-version:
+	@./bump-version.sh
